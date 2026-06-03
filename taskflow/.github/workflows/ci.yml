@@ -1,0 +1,29 @@
+name: CI Pipeline - TaskFlow
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Análisis estático con Flake8
+        run: flake8 app/ --max-line-length=120
+
+      - name: Ejecutar pruebas unitarias con cobertura
+        run: pytest tests/unit/ -v --cov=app --cov-report=xml --cov-fail-under=70
